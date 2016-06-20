@@ -32,18 +32,13 @@ function addConnection(connection) {
 		user: $("#username").val()
 	};
 
-	if (localStorage["connections"] != null) {
-		connections = $.parseJSON(localStorage["connections"]);
-
-		$.each(connections, function(i, item) {
-			if (item.url == connect[connection].url && item.acc == connect[connection].acc && item.user == connect[connection].user) {
-				addConnect = false;
-				return false;
-			}
-		});
-	} else {
-		connections = {};
-	}
+	connections = storage.get("connections", {});
+	$.each(connections, function(i, item) {
+		if (item.url == connect[connection].url && item.acc == connect[connection].acc && item.user == connect[connection].user) {
+			addConnect = false;
+			return false;
+		}
+	});
 
 	if (addConnect) {
 		$(".multiselect__select").append($("<option>", {
@@ -51,7 +46,7 @@ function addConnection(connection) {
 			text: connection
 		}).attr("acc", connect[connection].acc).attr("user", connect[connection].user).attr("url", connect[connection].url));
 		connections[connection] = connect[connection];
-		localStorage["connections"] = JSON.stringify(connections);
+		storage.set("connections", connections);
 	}
 }
 
@@ -115,7 +110,7 @@ function validate_fields(){
 }
 
 function restoreOptions() {
-	var connections;
+	var connections = storage.get("connections", {});
 	localize();
 	$("#server_select").focus();
 	$(document).keypress(function(event) {
@@ -129,16 +124,12 @@ function restoreOptions() {
 	});
 	$(".language__li").on("click", flag_click_handler);
 
-	if (localStorage["connections"] != null) {
-		connections = JSON.parse(localStorage["connections"]);
-
-		$.each(connections, function(i, connect) {
-			$(".multiselect__select").append($("<option>", {
-				value: i,
-				text: i
-			}).attr("acc", connect.acc).attr("user", connect.user).attr("url", connect.url));
-		});
-	}
+	$.each(connections, function(i, connect) {
+		$(".multiselect__select").append($("<option>", {
+			value: i,
+			text: i
+		}).attr("acc", connect.acc).attr("user", connect.user).attr("url", connect.url));
+	});
 
 	$(".multiselect__select").on("change", function() {
 		if ($(this).val() !== "default") {
@@ -188,6 +179,11 @@ function restoreOptions() {
 
 		}
 	}
+
+	try{
+		$(".multiselect__select")[0].selectedIndex = Object.keys(connections).length + 1;
+		$(".multiselect__select").change();
+	}catch(e){}		
 }
 
 function flag_click_handler(e){
