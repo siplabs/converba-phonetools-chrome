@@ -1,0 +1,70 @@
+<!--
+    Copyright 2016, SIPLABS LLC.
+
+    Licensed under the Apache License,Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "ASIS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+  -->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="style.css" />
+	</head>
+
+	<body>
+		<div class="sign">
+			<div class="logo logo-sign">
+				<img src="images/logo.png" alt="logo" class="logo__brand" />
+			</div>
+
+			<div class="box box-sign">
+				<div id="settings" class="box__wrap">
+					<select id="connection_select" tabindex="1" class="multiselect__select input wrap_input">
+						<option value="default">Choose connection</option>
+						<option value="new">New connection</option>
+					</select>
+					<input id="connection" tabindex="1" class="multiselect__input input wrap_input" placeholder="Enter new connection name" title="Double click to get options" />
+
+					<input id="url" class="input wrap_input" tabindex="2" placeholder="Enter URL" />
+					<input id="accname" class="input wrap_input" tabindex="3" placeholder="Enter your account name" />
+					<input id="username" class="input wrap_input" tabindex="4" placeholder="Enter your username" />
+					<input id="password" type="password" class="input wrap_input" tabindex="5" placeholder="Enter your password" />
+
+					<div id="status">&nbsp;&nbsp;</div>
+
+					<button id="signin" class="wrap_btn" tabindex="6">Sign In</button>
+				</div>
+
+				<div class="botmenu botmenu-sign">
+					<div id="flags" class="language">
+						<img src="images/lang-america.png" alt="language" title="" class="language__img" />
+						<ul class="language__ul">
+							<li id="ru-flag" class="language__li" title="Русский">Русский</li>
+							<li id="en-flag" class="language__li" title="English">English</li>
+						</ul>
+					</div>
+
+					<a href="#" tabindex="-1" class="about" id="about">
+						<img class="about__img" src="images/help.png" alt="Help" title="help" />
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<script src="jquery.js"></script>
+		<script src="jquery.base64.js"></script>
+		<script type="text/javascript" src="utils.js"></script>
+		<script src="sign.js"></script>
+		<script src="md5.js"></script>
+		<script type="text/javascript" src="jquery.kazoosdk.js"></script>
+	</body>
+</html>

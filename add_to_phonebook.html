@@ -1,0 +1,66 @@
+<!--
+Copyright 2016, SIPLABS LLC.
+Copyright 2013, BroadSoft, Inc.
+
+Licensed under the Apache License,Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "ASIS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+ -->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="style.css" />
+		<script src="jquery.js"></script>
+		<script src="utils.js"></script>
+		<script src="add_to_phonebook.js"></script>		
+	</head>
+	<body style="width: 100%;overflow: auto">
+		<div class="settings">
+			<div class="settings__head">
+				<div class="settings__h2" id="title">Add entry to phonebook</div>
+			</div>
+			<form class="settings__body" name="Options">
+				<fieldset>
+					<legend id="info">Personal information</legend>
+					<div class="settings__item">
+						<input class="input" type="text" id="first_name" name="name" placeholder="First name" required="true" />
+					</div>
+
+					<div class="settings__item">
+						<input class="input" type="text" id="last_name" name="last_name" placeholder="Last name" />
+					</div>
+
+					<div class="settings__item">
+						<input class="input" type="tel" id="phone" name="phone" placeholder="Telephone number" required="true" />
+					</div>
+
+					<div class="settings__item">
+					  <input class="input" type="text" id="birthday" name="birthday" placeholder="Birthday" />
+					</div>
+
+					<div class="settings__item">
+						<input class="input" type="email" id="email" name="email" placeholder="Email address" />
+					</div>
+
+					<div class="settings__item">
+						<input class="input" type="text" id="address" name="address" placeholder="Address" />
+					</div>
+				</fieldset>
+				<div id="error_msg2">&nbsp;&nbsp;</div>
+				<div class="settings__btns">
+					<input class="settings__btn settings__btn-save" type="button" value="Add entry" id="save_btn">
+					<input class="settings__btn settings__btn-reset" type="reset" value="Reset" id="reset_btn">
+				</div>
+			</form>
+		</div>
+	</body>
+</html>

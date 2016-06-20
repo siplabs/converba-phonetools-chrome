@@ -1,0 +1,55 @@
+<!--
+Copyright 2016, SIPLABS LLC.
+
+Licensed under the Apache License,Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "ASIS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+ -->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="style.css" />
+		<script src="jquery.js"></script>
+		<script src="utils.js"></script>
+		<script src="send_fax.js"></script>		
+	</head>
+	<body style="width: 100%;overflow: auto">
+		<div class="settings">
+			<div class="settings__head">
+				<div class="settings__h2" id="title">Send fax form</div>
+			</div>
+			<form class="settings__body" name="Options">
+				<fieldset>
+					<div class="settings__item">
+						<input class="input" type="url" id="attachment" name="attachment" placeholder="Url" required="true" />
+					</div>
+					<div class="settings__item">
+						<input class="input" type="text" id="to_name" name="to_name" placeholder="Recipient's name" required="true" />
+					</div>
+					<div class="settings__item">
+						<input class="input" type="tel" id="to_number" name="to_number" placeholder="Recipient's phone number" required="true" />
+					</div>
+					<div class="settings__item">
+						<select class="input"  name="caller_id" id="caller_id" required>
+							<option value="" disabled selected hidden>Send fax as:</option>
+						</select>
+					</div>					
+				</fieldset>
+				<div id="error_msg2">&nbsp;&nbsp;</div>
+				<div class="settings__btns">
+					<input class="settings__btn settings__btn-save" type="button" value="Send" id="send_btn">
+					<input class="settings__btn settings__btn-reset" type="reset" value="Reset" id="reset_btn">
+				</div>
+			</form>
+		</div>
+	</body>
+</html>
