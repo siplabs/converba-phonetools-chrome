@@ -36,8 +36,8 @@ chrome.runtime.sendMessage({type : "IS_CLICK_TO_DIAL_ENABLED"}, function(respons
 		console.log("found %o telphone numbers", nodes.length);
 
 		var image = chrome.extension.getURL("images/click2dial.png");
-		var replacement = " $3 <img id='clicktocall' src='" + image + "' onClick=\"sendCallMessage('$3');\" />";
-		var replacement2= " $3 <img id='clicktocall' src='" + image + "'/>";
+		var replacement = " $3<img id='clicktocall' src='" + image + "' onClick=\"sendCallMessage('$3');\" /> ";
+		var replacement2= " $3<img id='clicktocall' src='" + image + "'/> ";
 
 		nodes.forEach((node)=>{
 			if (node.parentNode) {

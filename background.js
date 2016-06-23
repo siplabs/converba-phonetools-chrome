@@ -27,25 +27,30 @@ function onMessage(request, sender, sendResponse) {
 	switch (type){
 	case "CALL":
 		if(is_too_fast("last_call_time", 3000)) return;
-		var destination = request.text.replace(/[- \)\(\.]/g, "");
-		console.log(MODULE + " calling: " + destination);
-		if (storage.get("active_device", "auto") === "auto") {
-			KAZOO.user.quickcall({
-				number: destination,
-				account_id: localStorage["account_id"],
-				userId: localStorage["user_id"]
+		var destination = validateNumber(request.text);
+		if (destination) {
+			console.log(MODULE + " calling: " + destination);
+			if (storage.get("active_device", "auto") === "auto") {
+				KAZOO.user.quickcall({
+					number: destination,
+					account_id: localStorage["account_id"],
+					userId: localStorage["user_id"]
+				});
+			}else{
+				KAZOO.device.quickcall({
+					number: destination,
+					account_id: localStorage["account_id"],
+					deviceId: localStorage["active_device"]
+				});
+			}
+			sendResponse({
+				status : "ok"
 			});
 		}else{
-			KAZOO.device.quickcall({
-				number: destination,
-				account_id: localStorage["account_id"],
-				deviceId: localStorage["active_device"]
+			sendResponse({
+				status : "bad phone number"
 			});
 		}
-
-		sendResponse({
-			status : "ok"
-		});
 		break;
 
 	case "IS_CLICK_TO_DIAL_ENABLED":
@@ -236,8 +241,9 @@ function updateLocalization(){
 		chrome.i18n.getUILanguage().substring(0, 2);
 	var lang = localStorage["lang"];
 
-	var a = $.getJSON("_locales/" + lang + "/messages.json").
-		    done((x)=> { storage.set("localization", x);});
+	$.getJSON("_locales/" + lang + "/messages.json").
+		success((x)=> { storage.set("localization", x);}).
+		error((x)=> { console.log("Failed to load localization: %o", x);});
 }
 
 function phoneBookRemoveEntry(entry_id){
@@ -386,7 +392,7 @@ function reloadTabs(){
 }
 
 function contentLoaded() {
-	prepareToStart();
+	prepareToStart();	
 	updateLocalization();
 	if (!(localStorage["url"] && localStorage["username"] && localStorage["accname"] && localStorage["credentials"])){
 		chrome.browserAction.setIcon({path: "images/logo_offline_128x128.png"});
@@ -884,12 +890,21 @@ function updateHistory(){
 						       id: record.id
 					       });
 				       });
-				       storage.set("last_history_update", Number.parseInt(d.data[d.data.length-1].timestamp) + 15); // 15s it is threshold for no-receiving
-				       // that record again (may dont work)
+				       storage.set("last_history_update", Number.parseInt(d.data[d.data.length-1].timestamp) + 15); 	// 15s it is threshold for no-receiving
+				       													// that record again (may dont work)
 			       },
 			       error: (d, s)=>{
 				       console.log("Error updateHistory: %o", d);
 			       }});
+}
+
+function validateNumber(string){
+	var phone = string.replace(/[- \)\(\.]/g, "").match(/\+?\d{4,15}/);
+	if (phone && phone[0]) {
+		return phone[0];
+	}else{
+		return undefined;
+	}
 }
 
 chrome.extension.onMessage.addListener(onMessage);
@@ -897,27 +912,37 @@ document.addEventListener('DOMContentLoaded', contentLoaded);
 chrome.contextMenus.removeAll();
 chrome.contextMenus.create({
 	onclick: (a,b)=>{
-		if(a.mediaType == "image"){
-
-		}else{
-			var text = a.selectionText;
-			var re = new RegExp(/(?:^| )(?!(?:[0-3]?\d([- ])[0-3]?\d\1\d{2,4})|(?:\d{2,4}([- ])[0-3]?\d\2[0-3]?\d) )((?:[+]?\d{1,3}([- ]?))[(]?\d{2,4}[)]?\4\d{2,5}(-|\4?)\d{2,5}(?:\5\d{2,5}){0,2})(?: |$|.|,)/);
-
-			var localization = storage.get("localization", {});
-			var phone = text.match(re);
-			if (phone) {
-				var ph = phone[3] || phone[0];
-				var name = prompt(localization.get_owner_name.message + " " + ph, localization.anonymous.message);
-				if (name) {
-					phoneBookAddEntry({name:name, phone:ph});
-				}
-			} else {
-				alert(localization.cant_parse_number.message + " :(");
+		var localization = storage.get("localization", {});
+		var text = a.selectionText;
+		var phone = validateNumber(text);
+		if(phone){
+			var name = prompt(localization.get_owner_name.message + " " + phone, localization.anonymous.message);
+			if (name) {
+				phoneBookAddEntry({name:name, phone:phone});
 			}
+		} else {
+			alert(localization.cant_parse_number.message + " :(");
 		}
 	},
 	id: "add_phone",
 	title:"Add to phonebook",
+	contexts: ["selection"]
+});
+chrome.contextMenus.create({
+	onclick: (a,b)=>{
+		var localization = storage.get("localization", {});
+		var text = a.selectionText;
+		var phone = validateNumber(text);
+		if(phone){
+			window.confirm("Are you sure you want to call " + phone + "?")?
+				onMessage({type: "CALL", text: phone}, "", ()=>{}):
+				console.log("Call canceled");
+		}else{
+			alert(localization.cant_parse_number.message + " :(");
+		}
+	},
+	id: "call",
+	title:"Call",
 	contexts: ["selection"]
 });
 chrome.runtime.onInstalled.addListener((details)=>{
