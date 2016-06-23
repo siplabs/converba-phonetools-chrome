@@ -899,7 +899,7 @@ function updateHistory(){
 }
 
 function validateNumber(string){
-	var phone = string.replace(/[- \)\(\.]/g, "").match(/\+?\d{4,15}/);
+	var phone = string.replace(/[-+(). ]/g, "").match(/\d{4,15}/);
 	if (phone && phone[0]) {
 		return phone[0];
 	}else{

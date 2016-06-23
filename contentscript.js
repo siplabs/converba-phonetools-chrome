@@ -22,7 +22,7 @@ function sendCallMessage(number) {
 
 chrome.runtime.sendMessage({type : "IS_CLICK_TO_DIAL_ENABLED"}, function(response) {
 	if (response.status == "true") {
-		var replacer = new RegExp(/(?:^| )(?!(?:[0-3]?\d([- ])[0-3]?\d\1\d{2,4})|(?:\d{2,4}([- ])[0-3]?\d\2[0-3]?\d) )((?:[+]?\d{1,3}([- ]?))[(]?\d{2,4}[)]?\4\d{2,5}(-|\4?)\d{2,5}(?:\5\d{2,5}){0,2})(?: |$|.|,)/);
+		var replacer = new RegExp(/(?:^| )(?!(?:[0-3]?\d([- ])[0-3]?\d\1\d{2,4})|(?:\d{2,4}([- ])[0-3]?\d\2[0-3]?\d) )(?:((?:[+]?\d{1,3}([- ]?))[(]?\d{2,4}[)]?\4\d{2,5}(-|\4?)\d{2,5}(?:\5\d{2,5}){0,2})|(\+?[(]?\+?[04]{1,2}[)]?[- ]?[(]?\d{1,5}[)]?(?:[- ]?\d{3,5}){2,5}))(?: |$|.|,)/);
 		var links = new RegExp(/tel:(.+)/);
 		var treeWalker = document.createTreeWalker(document, NodeFilter.SHOW_TEXT, (node)=> {
 			return (node.parentNode.tagName != 'TEXTAREA' && node.textContent.match(replacer))?
@@ -36,8 +36,8 @@ chrome.runtime.sendMessage({type : "IS_CLICK_TO_DIAL_ENABLED"}, function(respons
 		console.log("found %o telphone numbers", nodes.length);
 
 		var image = chrome.extension.getURL("images/click2dial.png");
-		var replacement = " $3<img id='clicktocall' src='" + image + "' onClick=\"sendCallMessage('$3');\" /> ";
-		var replacement2= " $3<img id='clicktocall' src='" + image + "'/> ";
+		var replacement = " $6$3<img id='clicktocall' src='" + image + "' onClick=\"sendCallMessage('$6$3');\" /> ";
+		var replacement2= " $6$3<img id='clicktocall' src='" + image + "'/> ";
 
 		nodes.forEach((node)=>{
 			if (node.parentNode) {
