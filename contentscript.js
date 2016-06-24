@@ -22,10 +22,23 @@ function sendCallMessage(number) {
 
 chrome.runtime.sendMessage({type : "IS_CLICK_TO_DIAL_ENABLED"}, function(response) {
 	if (response.status == "true") {
-		var replacer = new RegExp(/(?:^| )(?!(?:[0-3]?\d([- ])[0-3]?\d\1\d{2,4})|(?:\d{2,4}([- ])[0-3]?\d\2[0-3]?\d) )(?:((?:[+]?\d{1,3}([- ]?))[(]?\d{2,4}[)]?\4\d{2,5}(-|\4?)\d{2,5}(?:\5\d{2,5}){0,2})|(\+?[(]?\+?[04]{1,2}[)]?[- ]?[(]?\d{1,5}[)]?(?:[- ]?\d{3,5}){2,5}))(?: |$|.|,)/);
+		var rgx = {
+			date1: "[0-3]?\\d([- ])[0-3]?\\d\\1\\d{2,4}",
+			date2: "\\d{2,4}([- ])[0-3]?\\d\\2[0-3]?\\d",
+			year_interval: "[12]\\d{3}-[12]\\d{3}",
+			phones_uk: "[+]?[(]?[+]?[04]{1,2}[)]?[- ]?[(]?\\d{1,5}[)]?(?:[- ]?\\d{2,4}){2,5}",
+			phones_general: "(?:[+]?\\d{1,4}([- ]?))[(]?\\d{1,5}[)]?\\5\\d{2,5}(-|\\5?)\\d{2,5}(?:\\6\\d{2,5}){0,2}",
+			phones_other: "[(]\\d{2,4}[)](?:[- ]?\\d{2,5}){1,3}"
+		};
+		var regexp = "(?:^| )(?!(?:(?:"+rgx.date1+")|(?:"+rgx.date2+")|(?:"+rgx.year_interval+"))(?=\\s|[).,]|$))((?:(?:"+rgx.phones_uk+")|("+rgx.phones_general+")|("+rgx.phones_other+")(?=\\s|[).,]|$)))";
+		var replacer = new RegExp(regexp);
 		var links = new RegExp(/tel:(.+)/);
 		var treeWalker = document.createTreeWalker(document, NodeFilter.SHOW_TEXT, (node)=> {
-			return (node.parentNode.tagName != 'TEXTAREA' && node.textContent.match(replacer))?
+			return (node.parentNode.tagName != 'TEXTAREA'&&
+				node.parentNode.tagName != 'CODE'&&
+				node.parentNode.tagName != 'INPUT'&&
+				node.parentNode.tagName != 'A'&&
+				node.textContent.match(replacer))?
 				NodeFilter.FILTER_ACCEPT: NodeFilter.FILTER_SKIP;
 		}, false);
 
@@ -36,12 +49,12 @@ chrome.runtime.sendMessage({type : "IS_CLICK_TO_DIAL_ENABLED"}, function(respons
 		console.log("found %o telphone numbers", nodes.length);
 
 		var image = chrome.extension.getURL("images/click2dial.png");
-		var replacement = " $6$3<img id='clicktocall' src='" + image + "' onClick=\"sendCallMessage('$6$3');\" /> ";
-		var replacement2= " $6$3<img id='clicktocall' src='" + image + "'/> ";
+		var replacement = " $3<img id='clicktocall' src='" + image + "' onClick=\"sendCallMessage('$3');\"/>";
+		var replacement2= " $3<img id='clicktocall' src='" + image + "'/>";
 
 		nodes.forEach((node)=>{
 			if (node.parentNode) {
-				node.parentNode.innerHTML = node.parentNode.innerHTML.replace(replacer, (node.parentNode.tagName == 'A')? replacement2: replacement);
+				node.parentNode.innerHTML = node.parentNode.innerHTML.replace(replacer, replacement);
 			}
 		});
 
@@ -54,6 +67,7 @@ chrome.runtime.sendMessage({type : "IS_CLICK_TO_DIAL_ENABLED"}, function(respons
 			if (num && num.length > 0){
 				x.addEventListener('click', (e)=>{ sendCallMessage(num);});
 				x.href = '#';
+				x.innerHTML = x.innerHTML.replace(replacer, replacement2);
 			}});
 
 		console.log("found %o telphone numbers links", targets.length);
